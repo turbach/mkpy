@@ -1566,6 +1566,7 @@ def _hdr_dblock_to_info_montage(hdr, apparatus_yaml=None):
         coord_frame="head",
     )
 
+    # MNE began locking Info attrs sometime between 0.23 and 1.0
     with info._unlock():
         info = _patch_dblock_info(info, hdr, hdr_mne)
     return info, montage
