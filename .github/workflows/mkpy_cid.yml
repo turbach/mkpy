@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        py_ver: [3.8, 3.9]
+        py_ver: [3.8, 3.9, 3.10]
 
     env:
       PY_VER: ${{ matrix.py_ver }}
