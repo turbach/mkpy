@@ -76,7 +76,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        py_ver: ["3.8", "3.9", "3.10"]
+        # py_ver: ["3.8", "3.9", "3.10"]
+        py_ver: ["3.10"]
 
     env:
       PY_VER: ${{ matrix.py_ver }}
@@ -122,7 +123,7 @@ jobs:
       - name: conda mambabuild --python=${{ env.PY_VER }} conda
         id: conda-bld
         run: |
-          conda mambabuild --python=$PY_VER conda
+          conda mambabuild --python=$PY_VER --numpy=1.22 conda
           tarball=$(conda build --python=$PY_VER conda --output | tail -1)
           # not converting b.c. of Cythonization
           # conda convert -p osx-64 -p win-64 -o $CONDA_BLD_PATH $tarball
