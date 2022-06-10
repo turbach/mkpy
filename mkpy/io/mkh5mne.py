@@ -717,11 +717,24 @@ def _check_mkh5_mne_epochs_table(mne_raw, epochs_name, epochs_table):
     if error_msg:
         raise ValueError(error_msg)
 
-    # check channel data at mne tick agrees with epoch table
+    # check channel data at mne tick agrees with epoch table. Columns derived
+    # from the named epoch tables must match the log
+    dig_cols = [
+        'raw_evcodes', 'dblock_ticks', 'log_ccodes', 'log_flags', 'log_evcodes', 'crw_ticks'
+    ]
     check_cols = set(mne_raw.info.ch_names).intersection(set(epochs_table.columns))
     for col in check_cols:
+        _check_mkh5_event_channel(mne_raw, col)
         mne_col = mne_raw.get_data(col).squeeze()[epochs_table["mne_raw_tick"]]
-        errors = epochs_table.where(epochs_table[col] != mne_col).dropna()
+
+        # hardcoded dig EEG recording columns must match
+        # anything else in named epoch table columns must match the log_evcodes
+        if col in dig_cols:
+            errors = epochs_table.where(epochs_table[col] != mne_col).dropna()
+        else:
+            print(f"checking event codes on MNE stim channel {col} match mkh5 log_evcodes")
+            errors = epochs_table.where(epochs_table["log_evcodes"] != mne_col).dropna()
+
         if len(errors):
             error_msg = (
                 f"mkh5 epochs table {epochs_name}['{col}'] does not match"
